@@ -1,0 +1,370 @@
+1. (8分)用JavaScript写一个函数，判断字符串是否是这样组成的:第一个必须是字母,后面可以是字母、数字、下划线，总长度为5-20。如果符合条件返回1，否则返回0。函数原型: function checkString(str)
+
+ function checkString(str){
+        var che = /^[a-zA-Z]\w{4,19}$/;
+        let blo = che.test(str);
+        if(blo===true){
+            console.log('1');
+        }else{
+            console.log('0');
+        }
+    }
+
+    
+    checkString('f_d_sswqer');
+
+2. (7分)用JavaScript实现， 鼠标点击页面中的任意标签，alert该标签的名称。
+
+document.onclick = function(e){
+        var e=(e||event);
+        var o=e["target"]||e["srcElement"];
+        alert(o.tagName.toLowerCase()); 
+    }
+
+3. (5分)请写出下方代码段的执行结果，并说明原因。
+var s1 = "abc";
+var s2=new String(s1);
+s1.color = "blue";
+s2.color = "red" ;
+console.log( s1===s2， s1.color, s2.color )
+
+false，undefined，red 
+
+值类型就是赋值一次后就变成固定不可变值，不可重新赋值。
+引用类型就是可以可变值，可重新赋值。
+Java中String和js中的object是可以重新赋值的“引用类型”，
+但在js中string，number，boolean是不可以重新赋值的“值类型”。
+
+
+
+4. (10分)页面上有且只有一个span元素，请使用CSS实现如
+下效果。
+注:底色为gray
+
+5. (15分)请定义一个函数repeat:
+
+function repeat ( func， nums， times ) {
+// fill it
+//函数repeat的调用方法: 
+var a = repeat( alert， 6，3000 ) ;
+a( "你好" ); // alert六次"你好"，每次间隔3秒
+
+	function myRepeat(fn, times, wait) {
+		return function (content) {
+			let count = 0;
+			var timer = setInterval(() => {
+				count += 1;
+				fn(content)
+				if (count === times) {
+					clearInterval(timer)
+				}
+			}, wait)
+		}
+
+	}
+
+	const repeatFun = myRepeat(alert, 6, 3000)
+	repeatFun('你好');
+
+
+6. (15分)请设计一套方案，确保页面中的某个JS加载完全。可使用js或jquery进行处理。
+
+function loadScript（url , callback）{  
+
+var script = document.createElement("script");  
+
+     script.type="text/javascript";  
+
+if(script.readyState){  
+
+         script.onreadystatechange = function(){  
+
+if(script.readyState=="loaded"||script.readyState=="complete"){  
+
+                  script.onreadystatechange=null;  
+
+                  callback();  
+
+             }  
+
+         }  
+
+     }else{  
+
+        script.onload = function(){  
+
+            callback();  
+
+        }  
+     }  
+     script.src = url;  
+
+     document.getElementsByName("head")[0].appendChild(script);  
+
+}  
+
+
+7. (10分)请列举你所知道的IE和FireFox的兼容性问题，以及相应的解决方案。
+为了方便大家阅读代码，以下以 IE 代替 Internet Explorer,以 MF/FF 代替 Mozzila Firefox ：
+
+
+1、//window.event
+IE:有window.event对象
+FF:没有window.event对象。
+可以通过给函数的参数传递event对象。如οnmοusemοve=doMouseMove（event）
+解决方法：var event = event || window.event;一个示例：
+
+<script>
+function test(event) {
+var event = event || window.event;
+//do Something
+}
+</script>
+<input type="button" value="click" οnclick="test(event)"/>
+
+2、//鼠标当前坐标
+IE：event.x和event.y。
+FF：event.pageX和event.pageY。
+通用：两者都有event.clientX和event.clientY属性。
+
+//鼠标当前坐标(加上滚动条滚过的距离)
+IE：event.offsetX和event.offsetY。
+FF：event.layerX和event.layerY。
+
+解决方法示例：
+
+<script>
+function test(event) {
+var event = event || window.event;
+//or var event = event ? event : window.event;//这两种都可以，也可以用if else（这简写）
+var x = event.offsetX || event.layerX;
+var y = event.offsetY || event.layerY;
+//do Something
+}
+</script>
+<div οnmοusedοwn="test(event)"></div>
+
+3、//event.srcElement问题
+说明:IE下,event对象有srcElement属性,但是没有target属性;Firefox下,even对象有target属性,
+但是没有srcElement属性.
+解决方法:使用obj(obj = event.srcElement ? event.srcElement : event.target;)
+来代替IE下的event.srcElement或者
+Firefox下的event.target. 请同时注意event的兼容性问题。
+
+ 
+
+4、//event.toElement问题
+IE下even对象有srcElement属性，但是没有target属性；
+Firefox下even对象有target属性，但是没有srcElement属性
+解决方法：
+var target = e.relatedTarget || e.toElement;
+
+ 
+
+5、//标签的x和y的坐标位置：style.posLeft 和 style.posTop
+IE：有。
+FF：没有。
+通用：object.offsetLeft 和 object.offsetTop。
+
+ 
+
+6、//窗体的高度和宽度
+IE：document.body.offsetWidth和document.body.offsetHeight。注意：此时页面一定要有body标签。
+FF：window.innerWidth和window.innerHegiht，
+以及document.documentElement.clientWidth和document.documentElement.clientHeight。
+通用：document.body.clientWidth和document.body.clientHeight。
+
+ 
+
+7、//添加事件
+IE：element.attachEvent("onclick", function);。
+FF：element.addEventListener("click", function, true)。
+通 用：element.οnclick=function。虽然都可以使用onclick事件，但是onclick和上面两种方法的效果是不一样的，
+onclick 只有执行一个过程，而attachEvent和addEventListener执行的是一个过程列表，也就是多个过程。
+例如：element.attachEvent("onclick", func1);
+element.attachEvent("onclick", func2)这样func1和func2都会被执行。
+
+ 
+
+8、//标签的自定义属性
+IE：如果给标签div1定义了一个属性value，可以div1.value和div1["value"]取得该值。
+FF：不能用div1.value和div1["value"]取。
+通用：div1.getAttribute("value")。
+
+ 
+
+9、//document.form.item 问题
+IE:现有问题：现有代码中存在许多 document.formName.item("itemName") 这样的语句，不能在 MF 下运行
+FF/IE: document.formName.elements["elementName"]
+
+ 
+
+10、//集合/数组类对象问题
+(1)现有问题：
+现有代码中许多集合类对象取用时使用 ()，IE 能接受，MF 不能。
+(2)解决方法：
+改用 [] 作为下标运算。如：document.forms("formName") 改为 document.forms["formName"]。
+又如：document.getElementsByName("inputName")(1) 改为 document.getElementsByName("inputName")[1]
+
+ 
+
+11、//HTML 对象的 id 作为对象名的问题
+在 IE 中，HTML 对象的 ID 可以作为 document 的下属对象变量名直接使用。在 MF 中不能。
+解决方法：用 getElementById("idName") 代替 idName 作为对象变量使用。
+
+ 
+
+12、//用idName字符串取得对象的问题
+
+在IE中，利用 eval(idName) 可以取得 id 为 idName 的 HTML 对象，在MF 中不能。
+解决方法：用 getElementById(idName) 代替 eval(idName)。
+
+ 
+
+13、//变量名与某 HTML 对象 id 相同的问题
+在 MF 中，因为对象 id 不作为 HTML 对象的名称，所以可以使用与 HTML 对象 id 相同的变量名，IE 中不能。
+解决方法：在声明变量时，一律加上 var ，以避免歧义，这样在 IE 中亦可正常运行。此外，最好不要使用与 HTML 对象 id 相同的变量名，以减少错误。
+
+14、//document.getElementsByName() 和 document.all[name] 的问题
+现有问题：在 IE 中，getElementsByName()、document.all[name] 均不能用来取得 div 元素。
+（是否还有其它不能取的元素还不知道）。
+
+ 
+
+15、//document.all
+Firefox可以兼容document.all， 但会生成一条警告。可以用getElementById("*")
+或者 getElementByTagName("*")来代替，不过对于document.all.length等属性，则完全不兼容。
+
+ 
+
+16、//input.type属性问题
+说明:IE下input.type属性为只读;但是Firefox下input.type属性为读写
+
+ 
+
+17、//window.location.href问题
+说明:IE或者Firefox2.0.x下,可以使用window.location或window.location.href;Firefox1.5.x下,
+只能使用window.location
+解决方法:使用window.location来代替window.location.href
+
+ 
+
+18、//模态和非模态窗口问题
+说明:IE下,可以通过showModalDialog和showModelessDialog打开模态和非模态窗口;Firefox下则不能
+解决方法:直接使用window.open(pageURL,name,parameters)方式打开新窗口。
+如果需要将子窗口中的参数传递回父窗口,可以在子窗口中使用window.opener来访问父窗口.
+例如：var parWin = window.opener; parWin.document.getElementById("Aqing").value = "Aqing";
+
+ 
+
+19、//body问题
+Firefox的body在body标签没有被浏览器完全读入之前就存在；而IE的body则必须在body标签被浏览器完全载入之后才存在。
+
+ 
+
+20、//事件委托方法
+IE：document.body.onload = inject; //Function inject()在这之前已被实现
+FF：document.body.onload = inject();
+
+ 
+
+21、//firefox与IE的父元素(parentElement)的区别
+IE：obj.parentElement
+FF：obj.parentNode
+解决方法: 因为FF与IE都支持DOM,因此使用obj.parentNode是不错选择
+
+ 
+
+22、//innerText在IE中能正常工作，但是innerText在FireFox中却不行.
+
+需用textContent
+
+//FireFox中设置HTML标签的style时，所有位置性和字体尺寸的值必须后跟px。这个ie也是支持的。
+
+ 
+
+23、//父节点、子节点和删除节点
+IE：parentElement、parement.children，element.romoveNode(true)。
+FF：parentNode、parentNode.childNodes，node.parentNode.removeChild(node)。
+
+
+24、//对select的options集合操作
+枚举元素除了[]外，SelectName.options.item()也是可以的, 另外SelectName.options.length,
+SelectName.options.add/remove都可以在两种浏览器上使用。
+注意在add后赋值元素，否则会失败
+动态删除select中的所有options：
+document.getElementById("ddlResourceType").options.length=0;
+动态删除select中的某一项option：
+document.getElementById("ddlResourceType").options.remove(indx);
+动态添加select中的项option:
+document.getElementById("ddlResourceType").options.add(new Option(text,value));
+IE FF 动态删除通用方法：
+document.getElementById("ddlResourceType").options[indx] = null;
+
+ 
+
+25、//捕获事件
+曾经遇到的问题：
+FF没有setCapture()、releaseCapture()方法
+IE中的解决方法：
+obj.setCapture();
+obj.releaseCapture();
+FF火狐中的解决办法:
+
+window.captureEvents(Event.MOUSEMOVE|Event.MOUSEUP);
+window.releaseEvents(Event.MOUSEMOVE|Event.MOUSEUP);
+if (!window.captureEvents) {
+o.setCapture();
+}else {
+window.captureEvents(Event.MOUSEMOVE|Event.MOUSEUP);
+}
+if (!window.captureEvents) {
+o.releaseCapture();
+}else {
+window.releaseEvents(Event.MOUSEMOVE|Event.MOUSEUP);
+}
+
+26、//禁止选取网页内容
+FF需要用CSS禁止，IE用JS禁止
+解决方法：
+IE: obj.onselectstart = function（） {return false;}
+FF: -moz-user-select:none;
+
+
+27、//画图
+IE:VML
+FF:SVG
+
+
+
+
+
+
+8. (15分)用JavaScript/jquery写一 一个函数，统计一个字符串中出现次数最多的字符，返回这个次数。
+函数原型: function getMaxAppearCount (str)
+
+function maxNumLetter( str ){
+    var lettersObj = {},
+        len = str.length,
+        letter, letterNum, maxLetter, maxNumber = 0;
+    while( len-- ){
+        letter = str.substr(len, 1);
+        letterNum = lettersObj[ letter ] = ( lettersObj[ letter ] || 0 ) + 1;
+        
+        if( letterNum > maxNumber ){
+            maxLetter = letter;
+            maxNumber = letterNum;
+        }else if( letterNum === maxNumber ){
+            ( maxLetter instanceof Array) ? maxLetter.push( letter ) : ( maxLetter = [ maxLetter, letter ] );
+        }
+    }
+    return maxLetter.toString();
+}
+
+10.设计题，
+场景:现要开发一个影院订座页面，客户在选择完电影、具体
+的排期以及放映厅号后，页面显示该放映厅目前的座位情况
+(可订，已被订，不可用)并且响应客户的点击，将客户所选
+择的座位号收集，发送给后台。
+请按上面的场景设计-套前后台的对接数据方案，并且详细描
+述该选座页面的核心逻辑。
